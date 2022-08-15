@@ -1,9 +1,6 @@
 import math
 from random import randint as rnd
 
-import pygame
-
-# trs
 import pygame as pygame
 
 FPS = 30
@@ -96,7 +93,7 @@ class Ball:
 
 
 class Gun:
-    def __init__(self, screen) -> None:
+    def __init__(self, screen: pygame.Surface) -> None:
         """
         ball constructor
 
@@ -108,6 +105,8 @@ class Gun:
         self.f2_on = 0
         self.an = 1
         self.color = GREY
+        self.x_gan = 1
+        self.y_gan = 450
 
     def fire2_start(self, event) -> None:
         """
@@ -130,7 +129,7 @@ class Gun:
         bullet += 1
         new_ball = Ball(self.screen)
         new_ball.r += 5
-        self.an = math.atan2((event.pos[1] - new_ball.y), (event.pos[0] - new_ball.x))
+        self.an = math.atan2((event.pos[1] - self.y_gan), (event.pos[0] - self.x_gan))
         new_ball.vx = self.f2_power * math.cos(self.an)
         new_ball.vy = self.f2_power * math.sin(self.an)
         balls.append(new_ball)
@@ -144,7 +143,7 @@ class Gun:
             event: MOUSEMOTION (mouse position x,y)
         """
         if event:
-            self.an = math.atan((event.pos[1] - 450) / (event.pos[0] - 20))
+            self.an = math.atan2((event.pos[1] - self.y_gan), (event.pos[0] - self.x_gan))
         if self.f2_on:
             self.color = RED
         else:
@@ -172,7 +171,7 @@ class Gun:
 
 
 class Tank(Gun):
-    def __init__(self, x_tank: int = 400, y_tank: int = 450) -> None:
+    def __init__(self, screen: pygame.Surface, x_tank: int = 400, y_tank: int = 590) -> None:
         """
         Tank constructor
 
@@ -182,8 +181,10 @@ class Tank(Gun):
         self.f2_on = 0
         self.an = 1
         self.color = GREEN
-        self.x = x_tank
-        self.y = y_tank
+        self.x_tank = x_tank
+        self.y_tank = y_tank
+        self.x_gan = self.x_tank
+        self.y_gan = self.y_tank
 
     def move(self, event) -> None:
         """
@@ -192,23 +193,23 @@ class Tank(Gun):
             event: pressed key on keyboard
 
         """
-        if event == pygame.K_LEFT:
-            self.x -= 1
-        if event == pygame.K_RIGHT:
-            self.x += 1
+        print("zasol")
+        if event.key == pygame.K_LEFT:
+            self.x_tank -= 10
+            print("zasol tut-")
+        if event.key == pygame.K_RIGHT:
+            self.x_tank += 10
+            print("zasol tut+")
 
     def draw(self) -> None:
         """
         draw the gun
         """
-        print(
-            f"self.x: {type(self.x)}\n"
-            f"math.cos(self.an): {type(math.cos(self.an))}\n"
-            f"self.f2_power + 30: {type(self.f2_power + 30)}"
-            )
-        fnx = (self.x + math.cos(self.an) * (self.f2_power + 30))
-        fny = (self.y + math.sin(self.an) * (self.f2_power + 30))
-        pygame.draw.line(screen, self.color, (self.x, self.y), (fnx, fny), 7)
+        fnx = (self.x_tank + math.cos(self.an) * (self.f2_power + 30))
+        fny = (self.y_tank + math.sin(self.an) * (self.f2_power + 30))
+        pygame.draw.line(screen, self.color, (self.x_tank, self.y_tank), (fnx, fny), 7)
+        pygame.draw.line(screen, self.color, (self.x_tank, self.y_tank + 7), (self.x_tank + 15, self.y_tank + 7), 14)
+        pygame.draw.line(screen, self.color, (self.x_tank, self.y_tank + 7), (self.x_tank - 15, self.y_tank + 7), 14)
 
 
 class Target:
@@ -305,7 +306,7 @@ count_moving_targets = 3
 gameCountFlag = 0
 
 clock = pygame.time.Clock()
-gun = Gun(screen)
+# gun = Gun(screen)
 tank = Tank(screen)
 
 for t in range(count_targets):
@@ -350,12 +351,12 @@ while not finished:
         if event.type == pygame.QUIT:
             finished = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            gun.fire2_start(event)
+            tank.fire2_start(event)
         elif event.type == pygame.MOUSEBUTTONUP:
-            gun.fire2_end(event)
+            tank.fire2_end(event)
             shoots += 1
         elif event.type == pygame.MOUSEMOTION:
-            gun.targetting(event)
+            tank.targetting(event)
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 tank.move(event)
@@ -385,6 +386,6 @@ while not finished:
                         target.new_target()
                         targets.append(target)
 
-    gun.power_up()
+    tank.power_up()
 
 pygame.quit()
