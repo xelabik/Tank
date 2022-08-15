@@ -22,7 +22,7 @@ HEIGHT = 600
 
 
 class Ball:
-    def __init__(self, screen: pygame.Surface, x: int = 1, y: int = 450) -> None:
+    def __init__(self, screen: pygame.Surface, x: int = 50, y: int = 50) -> None:
         """
         ball constructor
 
@@ -127,7 +127,7 @@ class Gun:
         """
         global balls, bullet
         bullet += 1
-        new_ball = Ball(self.screen)
+        new_ball = Ball(self.screen, self.x_gan, self.y_gan)
         new_ball.r += 5
         self.an = math.atan2((event.pos[1] - self.y_gan), (event.pos[0] - self.x_gan))
         new_ball.vx = self.f2_power * math.cos(self.an)
@@ -153,7 +153,7 @@ class Gun:
         """
         draw the gun
         """
-        st = [1, 450]
+        st = [self.x_gan, self.y_gan]
         fnx = (st[0] + math.cos(self.an) * (self.f2_power + 30))
         fny = (st[1] + math.sin(self.an) * (self.f2_power + 30))
         pygame.draw.line(screen, self.color, (st[0], st[1]), (fnx, fny), 7)
@@ -188,28 +188,46 @@ class Tank(Gun):
 
     def move(self, event) -> None:
         """
-
+        move Tank left or right depending of pressed key
         Args:
             event: pressed key on keyboard
-
         """
         print("zasol")
         if event.key == pygame.K_LEFT:
             self.x_tank -= 10
-            print("zasol tut-")
+
         if event.key == pygame.K_RIGHT:
             self.x_tank += 10
-            print("zasol tut+")
 
     def draw(self) -> None:
         """
-        draw the gun
+        draw the Tank
         """
         fnx = (self.x_tank + math.cos(self.an) * (self.f2_power + 30))
         fny = (self.y_tank + math.sin(self.an) * (self.f2_power + 30))
         pygame.draw.line(screen, self.color, (self.x_tank, self.y_tank), (fnx, fny), 7)
         pygame.draw.line(screen, self.color, (self.x_tank, self.y_tank + 7), (self.x_tank + 15, self.y_tank + 7), 14)
         pygame.draw.line(screen, self.color, (self.x_tank, self.y_tank + 7), (self.x_tank - 15, self.y_tank + 7), 14)
+
+    def fire2_end(self, event) -> None:
+        """
+        Shut with ball when MOUSE left BUTTON UP
+
+        Start velocity (vx and vy) depend on mouse position
+
+        Args:
+            event: mouse position
+        """
+        global balls, bullet
+        bullet += 1
+        new_ball = Ball(self.screen, self.x_tank, self.y_tank)
+        new_ball.r += 5
+        self.an = math.atan2((event.pos[1] - self.y_gan), (event.pos[0] - self.x_gan))
+        new_ball.vx = self.f2_power * math.cos(self.an)
+        new_ball.vy = self.f2_power * math.sin(self.an)
+        balls.append(new_ball)
+        self.f2_on = 0
+        self.f2_power = 10
 
 
 class Target:
