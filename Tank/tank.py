@@ -320,7 +320,7 @@ shoots = 0
 balls = []
 targets = []
 count_targets = 2
-count_moving_targets = 3
+count_moving_targets = 1
 gameCountFlag = 0
 
 clock = pygame.time.Clock()
