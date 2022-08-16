@@ -104,7 +104,7 @@ class TargetBullet(Ball):
         self.live = 1
 
     def move(self) -> None:
-        self.vy += 1  # gravity
+        self.vy += 0.7  # gravity
         self.x += self.vx
         self.y += self.vy
         if self.y > 596:
@@ -398,12 +398,13 @@ while not finished:
                     and lastTargetShoot > FPS * 3:
                 new_target_bullet = TargetBullet(screen, target.x, target.y)
                 target_bullets.append(new_target_bullet)
-                print("target_bullets sozdaldobavil ", len(target_bullets))
+                #delite    print("target_bullets sozdaldobavil ", len(target_bullets))
                 # new_target_bullet is created infrequently every 3 seconds
                 lastTargetShoot = 0
     # target_bullets move
     for tb in target_bullets:
-        tb.move()
+        if tb.live:
+            tb.move()
     # targets draw
     for target in targets:
         if target.live:
@@ -414,7 +415,8 @@ while not finished:
             b.draw()
     # TargetBullet draw
     for tb in target_bullets:
-        tb.draw()
+        if tb.live:
+            tb.draw()
     pygame.display.update()
     clock.tick(FPS)
     # mouse and keyboard event manager
