@@ -92,6 +92,41 @@ class Ball:
             return False
 
 
+class TargetBullet(Ball):
+    def __init__(self, screen: pygame.Surface, x: int, y: int) -> None:
+        self.screen = screen
+        self.x = x
+        self.y = y
+        self.r = 5
+        self.color = WHITE
+        self.vx = 0
+        self.vy = 0
+        self.live = 1
+
+    def move(self) -> None:
+        self.vy += 1  # gravity
+        self.x += self.vx
+        self.y += self.vy
+        if self.y > 596:
+            self.y = 1000
+            self.live = 0
+
+    def hittest_tank(self, obj) -> bool:
+        """checks collision ball with tank.
+
+        Args:
+            obj: target, which collision checking .
+        Returns:
+            if ball hit the target return true . else return False.
+        """
+        x_check = abs(self.x - obj.x) - (self.r + obj.r)
+        y_check = abs(self.y - obj.y) - (self.r + obj.r)
+        if x_check < 0 and y_check < 0:
+            return True
+        else:
+            return False
+
+
 class Gun:
     def __init__(self, screen: pygame.Surface) -> None:
         """
@@ -185,6 +220,7 @@ class Tank(Gun):
         self.y_tank = y_tank
         self.x_gan = self.x_tank
         self.y_gan = self.y_tank
+        self.life = 10
 
     def move(self, event) -> None:
         """
@@ -317,9 +353,10 @@ bullet = 0
 points = 0
 shoots = 0
 balls = []
+target_bullets = []
 targets = []
-count_targets = 2
-count_moving_targets = 1
+count_targets = 1
+count_moving_targets = 2
 gameCountFlag = 0
 
 clock = pygame.time.Clock()
@@ -339,7 +376,8 @@ for t in range(count_moving_targets):
 finished = False
 while not finished:
     screen.fill(screen_color)
-
+    # tank draw
+    #print("tank.x is ", tank.x_tank)
     tank.draw()
     # score
     font = pygame.font.Font(None, 36)
@@ -353,6 +391,12 @@ while not finished:
     for target in targets:
         if type(target) == MovingTarget:
             target.move()
+            #print("target.x is ", target.x)
+            if abs(target.x - tank.x_tank) < 10:
+                new_target_bullet = TargetBullet(screen, target.x, target.y)
+                target_bullets.append(new_target_bullet)
+                print("target_bullets sozdaldobavil ", len(target_bullets))
+
     for target in targets:
         if target.live:
             target.draw()
@@ -360,7 +404,9 @@ while not finished:
     for b in balls:
         if abs(b.vx) > 1:
             b.draw()
-
+    # TargetBullet draw
+    for tb in target_bullets:
+        tb.draw()
     pygame.display.update()
     clock.tick(FPS)
     # mouse event manager
