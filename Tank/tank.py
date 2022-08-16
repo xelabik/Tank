@@ -352,6 +352,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 bullet = 0
 points = 0
 shoots = 0
+lastTargetShoot = 0
 balls = []
 target_bullets = []
 targets = []
@@ -387,16 +388,23 @@ while not finished:
     font = pygame.font.Font(None, 36)
     text = font.render("Shoots: " + str(shoots), True, BLACK)
     screen.blit(text, [30, 50])
-    # target draw
+    # target move
     for target in targets:
         if type(target) == MovingTarget:
             target.move()
-            #print("target.x is ", target.x)
-            if abs(target.x - tank.x_tank) < 10:
+            lastTargetShoot += 1
+            if abs(target.x - tank.x_tank) < 15\
+                    and target.y < 400\
+                    and lastTargetShoot > FPS * 3:
                 new_target_bullet = TargetBullet(screen, target.x, target.y)
                 target_bullets.append(new_target_bullet)
                 print("target_bullets sozdaldobavil ", len(target_bullets))
-
+                # new_target_bullet is created infrequently every 3 seconds
+                lastTargetShoot = 0
+    # target_bullets move
+    for tb in target_bullets:
+        tb.move()
+    # targets draw
     for target in targets:
         if target.live:
             target.draw()
@@ -409,7 +417,7 @@ while not finished:
         tb.draw()
     pygame.display.update()
     clock.tick(FPS)
-    # mouse event manager
+    # mouse and keyboard event manager
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
