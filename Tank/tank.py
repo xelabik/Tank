@@ -192,7 +192,6 @@ class Tank(Gun):
         Args:
             event: pressed key on keyboard
         """
-        print("zasol")
         if event.key == pygame.K_LEFT:
             self.x_tank -= 10
 
