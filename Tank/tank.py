@@ -287,10 +287,10 @@ class Target:
         """
         new target initiation
         """
-        x = self.x = rnd(300, 780)
-        y = self.y = rnd(50, 550)
-        r = self.r = rnd(5, 25)
-        color = self.color = RED
+        self.x = rnd(300, 780)
+        self.y = rnd(50, 550)
+        self.r = rnd(5, 25)
+        self.color = RED
         self.live = 1
 
     def hit(self, points) -> int:
@@ -329,12 +329,12 @@ class MovingTarget(Target):
         """
         new moving target initiation
         """
-        x = self.x = rnd(300, 780)
-        y = self.y = rnd(50, 550)
-        r = self.r = rnd(5, 25)
-        mtarget_vel_x = self.mtarget_vel_x = rnd(-10, 10)
-        mtarget_vel_y = self.mtarget_vel_y = rnd(-10, 10)
-        color = self.color = GREEN
+        self.x = rnd(300, 780)
+        self.y = rnd(50, 550)
+        self.r = rnd(5, 25)
+        self.mtarget_vel_x = rnd(-10, 10)
+        self.mtarget_vel_y = rnd(-10, 10)
+        self.color = GREEN
         self.live = 1
 
     def move(self) -> None:
@@ -378,7 +378,7 @@ finished = False
 while not finished:
     screen.fill(screen_color)
     # tank draw
-    #print("tank.x is ", tank.x_tank)
+    # print("tank.x is ", tank.x_tank)
     tank.draw()
     # score
     font = pygame.font.Font(None, 36)
@@ -390,7 +390,7 @@ while not finished:
     screen.blit(text, [30, 50])
     # target move
     for target in targets:
-        if type(target) == MovingTarget:
+        if type(target) == MovingTarget and target.live:
             target.move()
             lastTargetShoot += 1
             if abs(target.x - tank.x_tank) < 15\
@@ -398,7 +398,7 @@ while not finished:
                     and lastTargetShoot > FPS * 3:
                 new_target_bullet = TargetBullet(screen, target.x, target.y)
                 target_bullets.append(new_target_bullet)
-                #delite    print("target_bullets sozdaldobavil ", len(target_bullets))
+                print("target_bullets sozdaldobavil ", len(target_bullets))
                 # new_target_bullet is created infrequently every 3 seconds
                 lastTargetShoot = 0
     # target_bullets move
@@ -435,8 +435,6 @@ while not finished:
                 tank.move(event)
             if event.key == pygame.K_RIGHT:
                 tank.move(event)
-
-
     # actions after event
     for b in balls:
         b.move()
