@@ -269,7 +269,7 @@ class Tank(Gun):
         reduce tank hit points on collision with target`s bullets
         """
         self.life -= 1
-        print("left ", self.life, "lives")
+        # print("left ", self.life, "lives")
 
 
 class Target:
@@ -386,14 +386,14 @@ finished = False
 while not finished:
     screen.fill(screen_color)
     # tank draw
-    # print("tank.x is ", tank.x_tank)
     if tank.life:
         tank.draw()
+        print("left ", tank.life, "lives")
     else:
         # Game Over
         font = pygame.font.Font(None, 76)
         text = font.render("Game Over: ", True, RED)
-        screen.blit(text, [30, 300])
+        screen.blit(text, [130, 300])
     # score
     font = pygame.font.Font(None, 36)
     text = font.render("Score: " + str(points), True, BLACK)
@@ -402,41 +402,41 @@ while not finished:
     text = font.render("Shoots: " + str(shoots), True, BLACK)
     screen.blit(text, [30, 50])
     # target move
-    for target in targets:
-        if type(target) == MovingTarget and target.live:
-            target.move()
-            lastTargetShoot += 1
-            if abs(target.x - tank.x_tank) < 15 \
-                    and target.y < 400 \
-                    and lastTargetShoot > FPS * 3:
-                new_target_bullet = TargetBullet(screen, target.x, target.y)
-                target_bullets.append(new_target_bullet)
-                # new_target_bullet is created infrequently every 3 seconds
-                lastTargetShoot = 0
-    # target_bullets move
-    for tb in target_bullets:
-        if tb.live:
-            tb.move()
-    # targets draw
-    for target in targets:
-        if target.live:
-            target.draw()
-    # balls(bullets) draw
-    for b in balls:
-        if abs(b.vx) > 1:
-            b.draw()
-    # TargetBullet draw
-    for tb in target_bullets:
-        if tb.live:
-            tb.draw()
-    # TargetBullet hitting tank
-    for tb in target_bullets:
-        if tb.live:
-            #if abs(tank.x_tank - tb.x) < 19:
-                #print("tank y", tank.y_tank, "tank y", tb.y)
-            if abs(tank.x_tank - tb.x) < 19 and abs(tank.y_tank - tb.y) < 12:
-                tank.hit()
-                print("zasol")
+    if tank.life:
+        for target in targets:
+            if type(target) == MovingTarget and target.live:
+                target.move()
+                lastTargetShoot += 1
+                if abs(target.x - tank.x_tank) < 15 \
+                        and target.y < 400 \
+                        and lastTargetShoot > FPS * 3:
+                    new_target_bullet = TargetBullet(screen, target.x, target.y)
+                    target_bullets.append(new_target_bullet)
+                    # new_target_bullet is created infrequently every 3 seconds
+                    lastTargetShoot = 0
+        # target_bullets move
+        for tb in target_bullets:
+            if tb.live:
+                tb.move()
+        # targets draw
+        for target in targets:
+            if target.live:
+                target.draw()
+        # balls(bullets) draw
+        for b in balls:
+            if abs(b.vx) > 1:
+                b.draw()
+        # TargetBullet draw
+        for tb in target_bullets:
+            if tb.live:
+                tb.draw()
+        # TargetBullet hitting tank
+        for tb in target_bullets:
+            if tb.live:
+                #if abs(tank.x_tank - tb.x) < 19:
+                    #print("tank y", tank.y_tank, "tank y", tb.y)
+                if abs(tank.x_tank - tb.x) < 19 and abs(tank.y_tank - tb.y) < 12:
+                    tank.hit()
 
     pygame.display.update()
     clock.tick(FPS)
