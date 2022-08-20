@@ -1,0 +1,20 @@
+ def fire2_end(self, event) -> None:
+        """
+        Shut with ball when MOUSE left BUTTON UP
+
+        Start velocity (vx and vy) depend on mouse position
+
+        Args:
+            event: mouse position
+        """
+        global balls, bullet
+        bullet += 1
+        new_ball = Ball(self.screen, self.x_tank, self.y_tank)
+        new_ball.r += 5
+        self.an = math.atan2((event.pos[1] - self.y_gan), (event.pos[0] - self.x_gan))
+        new_ball.vx = self.f2_power * math.cos(self.an)
+        new_ball.vy = self.f2_power * math.sin(self.an)
+        balls.append(new_ball)
+        self.f2_on = 0
+        self.f2_power = 10
+
