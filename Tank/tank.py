@@ -240,7 +240,9 @@ class Tank(Gun):
         """
         fnx = (self.x_tank + math.cos(self.an) * (self.f2_power + 30))
         fny = (self.y_tank + math.sin(self.an) * (self.f2_power + 30))
-        pygame.draw.line(screen, self.color, (self.x_tank, self.y_tank), (fnx, fny), 7)  # drow gun
+        # drow gun
+        pygame.draw.line(screen, self.color, (self.x_tank, self.y_tank), (fnx, fny), 7)
+        # drow body
         pygame.draw.line(screen, self.color, (self.x_tank, self.y_tank + 7), (self.x_tank + 15, self.y_tank + 7), 14)
         pygame.draw.line(screen, self.color, (self.x_tank, self.y_tank + 7), (self.x_tank - 15, self.y_tank + 7), 14)
 
@@ -269,7 +271,6 @@ class Tank(Gun):
         reduce tank hit points on collision with target`s bullets
         """
         self.life -= 1
-        # print("left ", self.life, "lives")
 
 
 class Target:
@@ -388,12 +389,11 @@ while not finished:
     # tank draw
     if tank.life:
         tank.draw()
-        print("left ", tank.life, "lives")
     else:
         # Game Over
         font = pygame.font.Font(None, 76)
-        text = font.render("Game Over: ", True, RED)
-        screen.blit(text, [130, 300])
+        text = font.render("Game Over: ", True, (204, 0, 0))
+        screen.blit(text, [250, 250])
     # score
     font = pygame.font.Font(None, 36)
     text = font.render("Score: " + str(points), True, BLACK)
@@ -401,6 +401,9 @@ while not finished:
     # shoots
     text = font.render("Shoots: " + str(shoots), True, BLACK)
     screen.blit(text, [30, 50])
+    # tank lives
+    text = font.render("Lives: " + str(tank.life), True, BLACK)
+    screen.blit(text, [30, 80])
     # target move
     if tank.life:
         for target in targets:
@@ -433,8 +436,6 @@ while not finished:
         # TargetBullet hitting tank
         for tb in target_bullets:
             if tb.live:
-                #if abs(tank.x_tank - tb.x) < 19:
-                    #print("tank y", tank.y_tank, "tank y", tb.y)
                 if abs(tank.x_tank - tb.x) < 19 and abs(tank.y_tank - tb.y) < 12:
                     tank.hit()
 
