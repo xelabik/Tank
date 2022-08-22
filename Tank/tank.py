@@ -240,7 +240,9 @@ class Tank(Gun):
         """
         fnx = (self.x_tank + math.cos(self.an) * (self.f2_power + 30))
         fny = (self.y_tank + math.sin(self.an) * (self.f2_power + 30))
+        # drow gun
         pygame.draw.line(screen, self.color, (self.x_tank, self.y_tank), (fnx, fny), 7)
+        # drow body
         pygame.draw.line(screen, self.color, (self.x_tank, self.y_tank + 7), (self.x_tank + 15, self.y_tank + 7), 14)
         pygame.draw.line(screen, self.color, (self.x_tank, self.y_tank + 7), (self.x_tank - 15, self.y_tank + 7), 14)
 
@@ -263,6 +265,12 @@ class Tank(Gun):
         balls.append(new_ball)
         self.f2_on = 0
         self.f2_power = 10
+
+    def hit(self) -> None:
+        """
+        reduce tank hit points on collision with target`s bullets
+        """
+        self.life -= 1
 
 
 class Target:
@@ -359,6 +367,7 @@ targets = []
 count_targets = 1
 count_moving_targets = 2
 gameCountFlag = 0
+font = pygame.font.Font(None, 36)
 
 clock = pygame.time.Clock()
 # gun = Gun(screen)
@@ -378,45 +387,58 @@ finished = False
 while not finished:
     screen.fill(screen_color)
     # tank draw
-    # print("tank.x is ", tank.x_tank)
-    tank.draw()
+    if tank.life:
+        tank.draw()
+    else:
+        # Game Over
+        font = pygame.font.Font(None, 76)
+        text = font.render("Game Over: ", True, (204, 0, 0))
+        screen.blit(text, [250, 250])
     # score
     font = pygame.font.Font(None, 36)
     text = font.render("Score: " + str(points), True, BLACK)
     screen.blit(text, [30, 20])
     # shoots
-    font = pygame.font.Font(None, 36)
     text = font.render("Shoots: " + str(shoots), True, BLACK)
     screen.blit(text, [30, 50])
+    # tank lives
+    text = font.render("Lives: " + str(tank.life), True, BLACK)
+    screen.blit(text, [30, 80])
     # target move
-    for target in targets:
-        if type(target) == MovingTarget and target.live:
-            target.move()
-            lastTargetShoot += 1
-            if abs(target.x - tank.x_tank) < 15\
-                    and target.y < 400\
-                    and lastTargetShoot > FPS * 3:
-                new_target_bullet = TargetBullet(screen, target.x, target.y)
-                target_bullets.append(new_target_bullet)
-                print("target_bullets sozdaldobavil ", len(target_bullets))
-                # new_target_bullet is created infrequently every 3 seconds
-                lastTargetShoot = 0
-    # target_bullets move
-    for tb in target_bullets:
-        if tb.live:
-            tb.move()
-    # targets draw
-    for target in targets:
-        if target.live:
-            target.draw()
-    # balls(bullets) draw
-    for b in balls:
-        if abs(b.vx) > 1:
-            b.draw()
-    # TargetBullet draw
-    for tb in target_bullets:
-        if tb.live:
-            tb.draw()
+    if tank.life:
+        for target in targets:
+            if type(target) == MovingTarget and target.live:
+                target.move()
+                lastTargetShoot += 1
+                if abs(target.x - tank.x_tank) < 15 \
+                        and target.y < 400 \
+                        and lastTargetShoot > FPS * 3:
+                    new_target_bullet = TargetBullet(screen, target.x, target.y)
+                    target_bullets.append(new_target_bullet)
+                    # new_target_bullet is created infrequently every 3 seconds
+                    lastTargetShoot = 0
+        # target_bullets move
+        for tb in target_bullets:
+            if tb.live:
+                tb.move()
+        # targets draw
+        for target in targets:
+            if target.live:
+                target.draw()
+        # balls(bullets) draw
+        for b in balls:
+            if abs(b.vx) > 1:
+                b.draw()
+        # TargetBullet draw
+        for tb in target_bullets:
+            if tb.live:
+                tb.draw()
+        # TargetBullet hitting tank
+        for tb in target_bullets:
+            if tb.live:
+                if abs(tank.x_tank - tb.x) < 19 and abs(tank.y_tank - tb.y) < 12:
+                    tank.hit()
+
     pygame.display.update()
     clock.tick(FPS)
     # mouse and keyboard event manager
